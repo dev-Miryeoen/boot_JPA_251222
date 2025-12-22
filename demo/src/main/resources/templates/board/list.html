@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+
+<div layout:fragment="content" class="container-md">
+  <h1>Board List</h1>
+  <table class="table">
+    <thead>
+    <th th:scope="col">#</th>
+    <th th:scope="col">title</th>
+    <th th:scope="col">writer</th>
+    <th th:scope="col">regDate</th>
+    <th th:scope="col">readCount</th>
+    </thead>
+    <tbody>
+    <tr th:each="board:${ph.list}">
+      <th scope="row">[[${board.bno}]]</th>
+      <td><a th:href="@{/board/detail(bno=${board.bno})}">[[${board.title}]]</a></td>
+      <td>[[${board.writer}]]</td>
+      <td>[[${#strings.substring(board.regDate,0,10)}]]</td>
+      <td>[[${board.readCount}]]</td>
+    </tr>
+    </tbody>
+  </table>
+
+  <!-- 페이지네이션 -->
+  <nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-center">
+      <li class="page-item" th:classappend="${ph.prev eq false ? 'disabled' : ''}">
+        <a class="page-link" th:href="@{/board/list(pageNo=${ph.startPage-1})}" aria-label="Previous">
+          <span aria-hidden="true">&laquo;</span>
+        </a>
+      </li>
+
+      <th:block th:each="i:${#numbers.sequence(ph.startPage, ph.endPage)}">
+        <li class="page-item">
+          <a class="page-link" th:href="@{/board/list(pageNo=${i})}">[[${i}]]</a>
+        </li>
+      </th:block>
+
+      <li class="page-item" th:classappend="${ph.next eq false ? 'disabled' : ''}">
+        <a class="page-link" th:href="@{/board/list(pageNo=${ph.endPage+1})}" aria-label="Next">
+          <span aria-hidden="true">&raquo;</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>

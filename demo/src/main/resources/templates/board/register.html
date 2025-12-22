@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+
+<div layout:fragment="content" class="container-md">
+  <h1>Board Register Page</h1>
+  <form action="/board/register" method="post">
+    <div class="mb-3">
+      <label for="t" class="form-label">Title</label>
+      <input type="text" class="form-control" name="title" id="t" placeholder="title...">
+    </div>
+    <div class="mb-3">
+      <label for="w" class="form-label">Writer</label>
+      <input type="text" class="form-control" name="writer" id="w" placeholder="writer...">
+    </div>
+    <div class="mb-3">
+      <label for="c" class="form-label">Content</label>
+      <textarea class="form-control" name="content" id="c" rows="5" cols="30"></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">register</button>
+  </form>
+</div>
