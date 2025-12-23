@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+
+<div layout:fragment="content" class="container-md">
+  <h1>Board Detail Page</h1>
+  <form action="/board/modify" method="post" id="modForm">
+    <input type="hidden" name="bno" th:value="${board.bno}">
+    <div class="mb-3">
+      <label for="t" class="form-label">Title</label>
+      <input type="text" class="form-control" name="title" id="t" th:value="${board.title}" readonly>
+    </div>
+    <div class="mb-3">
+      <label for="w" class="form-label">Writer</label>
+      <input type="text" class="form-control" name="writer" id="w" th:value="${board.writer}" readonly>
+    </div>
+    <div class="mb-3">
+      <label for="r" class="form-label">regDate</label>
+      <input type="text" class="form-control" name="regDate" id="r" th:value="${board.regDate}" readonly>
+    </div>
+    <div class="mb-3">
+      <label for="c" class="form-label">Content</label>
+      <textarea class="form-control" name="content" id="c" rows="5" cols="30" readonly>[[${board.content}]]</textarea>
+    </div>
+  </form>
+  <button type="button" class="btn btn-warning" id="modBtn">modify</button>
+  <a th:href="@{/board/remove(bno=${board.bno})}"><button type="button" class="btn btn-danger" id="delBtn" th:attr="data-bno=${board.bno}">delete</button></a>
+  <a th:href="@{/board/list}"><button type="button" class="btn btn-primary" id="listBtn">list</button></a>
+
+  <!-- comment post -->
+  <div id="comment">
+    <div class="input-group my-3">
+      <span class="input-group-text" id="cmtWriter">Tester</span>
+      <input type="text" id="cmtText" class="form-control" placeholder="Add Comment..." aria-label="Username" aria-describedby="basic-addon1">
+      <button type="button" id="cmtAddBtn" class="btn btn-primary">post</button>
+    </div>
+    <!-- comment spread -->
+    <ul class="list-group list-group-flush" id="cmtListArea">
+      <li class="list-group-item">
+        <div class="ms-2 me-auto">
+          <div class="fw-bold">writer</div>
+          content
+        </div>
+        <span class="badge text-bg-primary">reg_date</span>
+      </li>
+    </ul>
+
+    <!-- moreBtn -->
+    <div class="input-group my-3">
+      <button type="button" class="btn btn-info" id="moreBtn">more</button>
+    </div>
+
+    <!-- modal -->
+    <div class="modal" tabindex="-1" id="commentModal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="cmtWriterMod">Tester</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <input type="text" class="form-control" id="cmtTextMod">
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" id="cmtModBtn">changes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <script th:inline="javascript">
+    const bnoValue = [[${board.bno}]];
+  </script>
+  <script th:src="@{/js/boardComment.js}"></script>
+  <script th:src="@{/js/boardModify.js}"></script>
+  <script>
+    spreadCommentList(bnoValue);
+  </script>
+</div>
