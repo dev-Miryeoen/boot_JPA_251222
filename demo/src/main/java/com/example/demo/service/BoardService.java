@@ -1,7 +1,10 @@
 package com.example.demo.service;
 
 import com.example.demo.dto.BoardDTO;
+import com.example.demo.dto.BoardFileDTO;
+import com.example.demo.dto.FileDTO;
 import com.example.demo.entity.Board;
+import com.example.demo.entity.File;
 import org.springframework.data.domain.Page;
 
 public interface BoardService {
@@ -48,9 +51,37 @@ public interface BoardService {
 
     Page<BoardDTO> getList(int pageNo);
 
-    BoardDTO getDetail(long bno);
+    BoardFileDTO getDetail(long bno);
 
     Long modify(BoardDTO boardDTO);
 
     void delete(long bno);
+
+    // FileDTO => Entity
+    default File convertDtoToEntity(FileDTO fileDTO){
+        return File.builder()
+                .uuid(fileDTO.getUuid())
+                .saveDir(fileDTO.getSaveDir())
+                .fileName(fileDTO.getFileName())
+                .fileType(fileDTO.getFileType())
+                .bno(fileDTO.getBno())
+                .fileSize(fileDTO.getFileSize())
+                .build();
+    }
+
+    // FileEntity => FileDTO
+    default  FileDTO convertEntityToDto(File file){
+        return FileDTO.builder()
+                .uuid(file.getUuid())
+                .saveDir(file.getSaveDir())
+                .fileName(file.getFileName())
+                .fileType(file.getFileType())
+                .bno(file.getBno())
+                .fileSize(file.getFileSize())
+                .regDate(file.getRegDate())
+                .modDate(file.getModDate())
+                .build();
+    }
+
+    Long insert(BoardFileDTO boardFileDTO);
 }

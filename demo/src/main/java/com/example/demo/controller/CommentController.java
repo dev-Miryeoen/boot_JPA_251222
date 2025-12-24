@@ -1,9 +1,11 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.CommentDTO;
+import com.example.demo.handler.PageHandler;
 import com.example.demo.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -35,11 +37,19 @@ public class CommentController {
                 : new ResponseEntity<String>("0", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @GetMapping(value = "/list/{bno}",
+//    @GetMapping(value = "/list/{bno}",
+//            produces = MediaType.APPLICATION_JSON_VALUE)
+//    public ResponseEntity<List<CommentDTO>> list(@PathVariable("bno") Long bno){
+//        List<CommentDTO>list = commentService.getList(bno);
+//        return new ResponseEntity<List<CommentDTO>>(list,HttpStatus.OK);
+//    }
+
+    @GetMapping(value = "/list/{bno}/{page}",
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<CommentDTO>> list(@PathVariable("bno") Long bno){
-        List<CommentDTO>list = commentService.getList(bno);
-        return new ResponseEntity<List<CommentDTO>>(list,HttpStatus.OK);
+    public ResponseEntity<PageHandler<CommentDTO>> list(@PathVariable("bno") Long bno, @PathVariable("page") int page){
+        Page<CommentDTO> list = commentService.getList(bno, page);
+        PageHandler<CommentDTO> pageHandler = new PageHandler<>(list, page);
+        return new ResponseEntity<PageHandler<CommentDTO>>(pageHandler,HttpStatus.OK);
     }
 
     @PutMapping(value = "/modify",
@@ -51,4 +61,10 @@ public class CommentController {
                 : new ResponseEntity<String>("0", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @DeleteMapping(value = "/delete/{cno}")
+    public ResponseEntity<String> delete(@PathVariable("cno") Long cno){
+        commentService.delete(cno);
+        return cno > 0? new ResponseEntity<String>("1", HttpStatus.OK)
+                : new ResponseEntity<String>("0", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 }

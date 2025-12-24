@@ -19,6 +19,9 @@ document.getElementById('modBtn').addEventListener('click',()=>{
     // modBtn, delBtn 삭제
     document.getElementById('modBtn').remove();
     document.getElementById('delBtn').remove();
+    document.getElementById('listBtn').remove();
+    // 댓글라인 삭제
+    document.getElementById('comment').remove();
 })
 
 // list 버튼 이동 함수 /board/list로 이동

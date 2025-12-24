@@ -6,6 +6,10 @@ import com.example.demo.repository.CommentRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,12 +28,21 @@ public class CommentServiceImpl implements CommentService{
     }
 
     @Override
-    public List<CommentDTO> getList(Long bno) {
-        /* findBy** => ** 테이블 안에 있는 모든 칼럼
-        *  select * from comment where ** = ?  */
-        List<Comment> list = commentRepository.findByBno(bno);
-        return list.stream().map(comment -> convertEntityToDTO(comment)).toList();
+    public Page<CommentDTO> getList(Long bno, int page) {
+        // select * from comment where bno = #{bno} order by bno desc limit page, 5;
+        Pageable pageable = PageRequest.of(page-1, 5, Sort.by("cno").descending());
+
+        Page<Comment> list = commentRepository.findByBno(bno, pageable);
+        return list.map(this::convertEntityToDTO);
     }
+
+//    @Override
+//    public List<CommentDTO> getList(Long bno) {
+//        /* findBy** => ** 테이블 안에 있는 모든 칼럼
+//        *  select * from comment where ** = ?  */
+//        List<Comment> list = commentRepository.findByBno(bno);
+//        return list.stream().map(comment -> convertEntityToDTO(comment)).toList();
+//    }
 
     @Transactional
     @Override
@@ -38,5 +51,10 @@ public class CommentServiceImpl implements CommentService{
                 .orElseThrow(() -> new EntityNotFoundException("해당 댓글을 찾을 수 없습니다."));
         comment.setContent(commentDTO.getContent());
         return comment.getCno();
+    }
+
+    @Override
+    public void delete(Long cno) {
+        commentRepository.deleteById(cno);
     }
 }
