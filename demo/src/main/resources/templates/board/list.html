@@ -5,6 +5,40 @@
 
 <div layout:fragment="content" class="container-md">
   <h1>Board List</h1>
+  <div class="container-fluid m-2">
+    <form class="d-flex justify-content-end" role="search" action="/board/list" method="get">
+      <div class="inputBx">
+        <span></span>
+        <select class="form-select" name="type" aria-label="Default select example">
+          <option ${ph.type eq null}>Choose...</option>
+          <option value="t" th:selected="${ph.type eq 't'}">title</option>
+          <option value="w" th:selected="${ph.type eq 'w'}">writer</option>
+          <option value="c" th:selected="${ph.type eq 'c'}">content</option>
+          <option value="tc" th:selected="${ph.type eq 'tc'}">title + content</option>
+          <option value="wc" th:selected="${ph.type eq 'wc'}">writer + content</option>
+          <option value="tw" th:selected="${ph.type eq 'tw'}">title + writer</option>
+          <option value="twc" th:selected="${ph.type eq 'twc'}">all</option>
+        </select>
+      </div>
+      <div class="inputBx">
+        <span></span>
+        <input class="form-control me-2" type="search" name="keyword" th:value="${ph.keyword }" placeholder="Search" aria-label="Search"/>
+      </div>
+      <input type="hidden" name="pageNo" value="1">
+      <input type="hidden" name="qty" value="${ph.pgvo.qty }">
+      <div class="inputBx">
+        <button type="submit" class="btn btn-success position-relative">
+          <span></span>
+          Search
+          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning">
+            [[${ph.totalElement }]]
+            <span class="visually-hidden">unread messages</span>
+          </span>
+        </button>
+      </div>
+    </form>
+  </div>
+
   <table class="table">
     <thead>
     <th th:scope="col">#</th>
@@ -32,19 +66,19 @@
   <nav aria-label="Page navigation example">
     <ul class="pagination justify-content-center">
       <li class="page-item" th:classappend="${ph.prev eq false ? 'disabled' : ''}">
-        <a class="page-link" th:href="@{/board/list(pageNo=${ph.startPage-1})}" aria-label="Previous">
+        <a class="page-link" th:href="@{/board/list(pageNo=${ph.startPage}-1, type=${ph.type}, keyword=${ph.keyword})}" aria-label="Previous">
           <span aria-hidden="true">&laquo;</span>
         </a>
       </li>
 
       <th:block th:each="i:${#numbers.sequence(ph.startPage, ph.endPage)}">
         <li class="page-item">
-          <a class="page-link" th:href="@{/board/list(pageNo=${i})}">[[${i}]]</a>
+          <a class="page-link" th:href="@{/board/list(pageNo=${i}, type=${ph.type}, keyword=${ph.keyword})}">[[${i}]]</a>
         </li>
       </th:block>
 
       <li class="page-item" th:classappend="${ph.next eq false ? 'disabled' : ''}">
-        <a class="page-link" th:href="@{/board/list(pageNo=${ph.endPage+1})}" aria-label="Next">
+        <a class="page-link" th:href="@{/board/list(pageNo=${ph.endPage+1}, type=${ph.type}, keyword=${ph.keyword})}" aria-label="Next">
           <span aria-hidden="true">&raquo;</span>
         </a>
       </li>

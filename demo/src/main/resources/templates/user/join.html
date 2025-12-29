@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+
+<div layout:fragment="content" class="container-md">
+  <h1>Join Page</h1>
+  <form action="/user/join" method="post">
+    <div class="inputBx mb-3">
+      <span></span>
+      <input type="text" id="e" class="form-control" name="email" placeholder="User Email">
+    </div>
+    <div class="inputBx mb-3">
+      <span></span>
+      <input type="text" id="n" class="form-control" name="nick_name" placeholder="NickName">
+    </div>
+    <div class="inputBx mb-3">
+      <span></span>
+      <input type="password" id="p" class="form-control" name="pwd" placeholder="Password">
+    </div>
+    <div class="inputBx">
+      <button type="submit" class="btn btn-primary">register</button>
+    </div>
+  </form>
+</div>
