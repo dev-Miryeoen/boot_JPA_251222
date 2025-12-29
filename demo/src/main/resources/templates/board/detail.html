@@ -5,7 +5,7 @@
 
 <div layout:fragment="content" class="container-md" th:with="board = ${boardFileDTO.boardDTO}">
   <h1>Board Detail Page</h1>
-  <form action="/board/modify" method="post" id="modForm">
+  <form action="/board/modify" method="post" id="modForm" enctype="multipart/form-data">
     <input type="hidden" name="bno" th:value="${board.bno}">
     <div class="mb-3">
       <label for="t" class="form-label">Title</label>
@@ -43,9 +43,17 @@
             [[${fileDTO.fileName}]]
           </div>
           <span class="badge text-bg-warning">[[${fileDTO.regDate}]] / [[${fileDTO.fileSize}]]Bytes</span>
+          <button type="button" class="btn btn-sm btn-outline-danger file-x" style="visibility: hidden" th:data-uuid="${fileDTO.uuid}">x</button>
         </li>
       </ul>
     </div>
+    <!--  file upload 추가  -->
+    <div class="mb-3">
+      <input type="file" class="form-control" name="files" id="file" multiple style="display: none">
+      <button type="button" class="btn btn-outline-dark" id="trigger" style="display: none">file upload</button>
+    </div>
+    <!--  file list print  -->
+    <div class="mb-3" id="fileZone"></div>
   </form>
   <button type="button" class="btn btn-warning" id="modBtn">modify</button>
   <a th:href="@{/board/remove(bno=${board.bno})}"><button type="button" class="btn btn-danger" id="delBtn" th:attr="data-bno=${board.bno}">delete</button></a>
@@ -99,6 +107,7 @@
   </script>
   <script th:src="@{/js/boardComment.js}"></script>
   <script th:src="@{/js/boardModify.js}"></script>
+  <script th:src="@{/js/boardRegister.js}"></script>
   <script>
     spreadCommentList(bnoValue);
   </script>

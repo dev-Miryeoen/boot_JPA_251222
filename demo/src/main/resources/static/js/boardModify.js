@@ -22,7 +22,40 @@ document.getElementById('modBtn').addEventListener('click',()=>{
     document.getElementById('listBtn').remove();
     // 댓글라인 삭제
     document.getElementById('comment').remove();
-})
+
+    // file upload 버튼 설정(표시)
+    document.getElementById('trigger').style.display = 'block';
+
+    // file-x 버튼 표시
+    let fileDelBtn = document.querySelectorAll('.file-x');
+    console.log(fileDelBtn);
+    fileDelBtn.forEach(btn => {
+        btn.style.visibility = 'visible';
+        let uuid = btn.dataset.uuid;
+        // btn 버튼을 클릭하면 비동기로 uuid를 보내서 DB상에서 파일을 삭제
+        btn.addEventListener('click', (e)=> fileDelFunc(uuid).then(result =>{
+            if(result == "1"){
+                e.target.closest('li').remove();
+                alert("파일이 삭제되었습니다.");
+            }
+        }));
+    });
+});
+
+async function fileDelFunc(uuid){
+    try {
+        const url = `/board/delFile/${uuid}`;
+        const config = {
+            method: 'delete'
+        };
+
+        const resp = await fetch(url, config);
+        const result = await resp.text();
+        return result;
+    } catch (error){
+        console.log(error);
+    }
+}
 
 // list 버튼 이동 함수 /board/list로 이동
 // document.getElementById('listBtn').addEventListener('click',()=>{

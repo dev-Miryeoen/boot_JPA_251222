@@ -4,17 +4,17 @@ import com.example.demo.dto.BoardDTO;
 import com.example.demo.dto.BoardFileDTO;
 import com.example.demo.dto.FileDTO;
 import com.example.demo.handler.FileHandler;
+import com.example.demo.handler.FileRemoveHandler;
 import com.example.demo.handler.PageHandler;
 import com.example.demo.service.BoardService;
+import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -49,7 +49,7 @@ public class BoardController {
 
 //        Long bno = boardService.insert(boardDTO);
 //        log.info(">>> insert id >> {}", bno);
-        return "redirect:/";
+        return "redirect:/board/list";
     }
 
 //    @GetMapping("/list")
@@ -82,8 +82,14 @@ public class BoardController {
     }
 
     @PostMapping("/modify")
-    public String modify(BoardDTO boardDTO, RedirectAttributes redirectAttributes){
-        Long bno = boardService.modify(boardDTO);
+    public String modify(BoardDTO boardDTO, @RequestParam(name = "files", required = false) MultipartFile[] files, RedirectAttributes redirectAttributes){
+        List<FileDTO> fileList = null;
+        if(files != null && files[0].getSize() > 0){
+            // 핸들러 호출
+            fileList = fileHandler.uploadFile(files);
+        }
+        BoardFileDTO boardFileDTO = new BoardFileDTO(boardDTO, fileList);
+        Long bno = boardService.modify(boardFileDTO);
         redirectAttributes.addAttribute("bno", boardDTO.getBno());
         return "redirect:/board/detail";
     }
@@ -92,5 +98,20 @@ public class BoardController {
     public String remove(@RequestParam("bno") long bno){
         boardService.delete(bno);
         return "redirect:/board/list";
+    }
+
+    @DeleteMapping("/delFile/{uuid}")
+    public ResponseEntity<String> deleteFile(@PathVariable("uuid") String uuid){
+        // 파일을 먼저 삭제하고, DB데이터 삭제
+        FileDTO removeFile = boardService.getFile(uuid);
+        FileRemoveHandler fileRemoveHandler = new FileRemoveHandler();
+        boolean isDel = fileRemoveHandler.removeFile(removeFile);
+
+        long bno = 0;
+        if(isDel){
+            bno = boardService.delFile(uuid);
+        }
+        return bno > 0 ? ResponseEntity.ok("1") :
+                ResponseEntity.internalServerError().build();
     }
 }
