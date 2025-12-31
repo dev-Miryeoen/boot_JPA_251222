@@ -6,6 +6,7 @@
 <div layout:fragment="content" class="container-md">
   <h1>Join Page</h1>
   <form action="/user/join" method="post">
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
     <div class="inputBx mb-3">
       <span></span>
       <input type="text" id="e" class="form-control" name="email" placeholder="User Email">

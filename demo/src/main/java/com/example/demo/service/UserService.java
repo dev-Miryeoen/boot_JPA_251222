@@ -6,6 +6,8 @@ import com.example.demo.entity.AuthRole;
 import com.example.demo.entity.AuthUser;
 import com.example.demo.entity.User;
 
+import java.util.List;
+
 public interface UserService {
 
     // convert DtoToEntity
@@ -43,12 +45,19 @@ public interface UserService {
     }
 
     // authEntity 변환
-    default AuthUser convertAuthDtoToEntity(AuthUserDTO authUserDTO){
-        return AuthUser.builder()
-                .id(authUserDTO.getId())
-                .auth(AuthRole.USER)
-                .build();
+    default AuthUser convertAuthDtoToEntity(AuthUserDTO authUserDTO) {
+        return null;
     }
 
     String register(UserDTO userDTO);
+
+    void lastLoginUpdate(String name);
+
+    String modify(UserDTO userDTO);
+
+    List<UserDTO> getList();
+
+    String remove(String email);
+
+    UserDTO getDetail(String name);
 }

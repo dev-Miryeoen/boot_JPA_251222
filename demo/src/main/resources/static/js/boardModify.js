@@ -46,7 +46,10 @@ async function fileDelFunc(uuid){
     try {
         const url = `/board/delFile/${uuid}`;
         const config = {
-            method: 'delete'
+            method: 'delete',
+            headers:{
+                [csrfHeader] : csrfToken
+            }
         };
 
         const resp = await fetch(url, config);

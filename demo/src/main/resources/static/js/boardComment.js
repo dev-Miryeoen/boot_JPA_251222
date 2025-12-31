@@ -1,31 +1,37 @@
 console.log("boardComment.js in");
 console.log(bnoValue);
+console.log(loginUser);
 
-document.getElementById('cmtAddBtn').addEventListener('click',()=>{
-    const cmtText = document.getElementById('cmtText');
-    const cmtWriter = document.getElementById('cmtWriter');
+const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
 
-    if(cmtText == null || cmtText.value == ''){
-        alert("댓글 입력요망!");
-        cmtText.focus();
-        return false;
-    }
-    let cmtData = {
-        bno : bnoValue,
-        writer : cmtWriter.innerText,
-        content : cmtText.value
-    }
-    // 전송
-    postCommentToServer(cmtData).then(result => {
-        if(result == "1"){
-            alert("등록성공");
-            // 다시 입력하라 수 있도록 댓글 등록 창을 비우고, 포커스 맞추기
-            cmtText.value = "";
+document.addEventListener('click',(e)=>{
+    if(e.target.id == 'cmtAddBtn'){
+        const cmtText = document.getElementById('cmtText');
+        const cmtWriter = document.getElementById('cmtWriter');
+
+        if(cmtText == null || cmtText.value == ''){
+            alert("댓글 입력요망!");
             cmtText.focus();
+            return false;
         }
-        // 댓글 출력 호출
-        spreadCommentList(bnoValue);
-    })
+        let cmtData = {
+            bno : bnoValue,
+            writer : cmtWriter.innerText,
+            content : cmtText.value
+        }
+        // 전송
+        postCommentToServer(cmtData).then(result => {
+            if(result == "1"){
+                alert("등록성공");
+                // 다시 입력하라 수 있도록 댓글 등록 창을 비우고, 포커스 맞추기
+                cmtText.value = "";
+                cmtText.focus();
+            }
+            // 댓글 출력 호출
+            spreadCommentList(bnoValue);
+        })
+    }
 })
 
 // 화면에 출력하는 함수
@@ -46,8 +52,10 @@ function spreadCommentList(bno, page=1){
                 li += `${comment.content}`;
                 li += `</div>`;
                 li += `<span class="badge text-bg-primary">${comment.regDate}</span>`;
-                li += `<button type="button" class="btn btn-sm btn-outline-warning mod" data-bs-toggle="modal" data-bs-target="#commentModal">e</button>`;
-                li += `<button type="button" class="btn btn-sm btn-outline-danger del">x</button>`;
+                if(comment.writer == loginUser){
+                    li += `<button type="button" class="btn btn-sm btn-outline-warning mod" data-bs-toggle="modal" data-bs-target="#commentModal">e</button>`;
+                    li += `<button type="button" class="btn btn-sm btn-outline-danger del">x</button>`;
+                }
                 li += `</li>`;
             }
             ul.innerHTML += li;
@@ -133,7 +141,10 @@ async function removeCommentToServer(cno){
     try {
         const url = `/comment/delete/${cno}`;
         const config = {
-            method: 'delete'
+            method: 'delete',
+            headers:{
+                [csrfHeader] : csrfToken
+            }
         };
 
         const resp = await fetch(url, config);
@@ -151,7 +162,8 @@ async function updateCommentToServer(modData) {
         const config = {
             method: 'put',
             headers : {
-                'content-type':'application/json; charset=utf-8'
+                'content-type':'application/json; charset=utf-8',
+                [csrfHeader] : csrfToken
             },
             body : JSON.stringify(modData)
         };
@@ -181,7 +193,8 @@ async function postCommentToServer(cmtData){
         const config = {
             method: 'post',
             headers : {
-                'content-type':'application/json; charset=utf-8'
+                'content-type':'application/json; charset=utf-8',
+                [csrfHeader] : csrfToken
             },
             body : JSON.stringify(cmtData)
         };

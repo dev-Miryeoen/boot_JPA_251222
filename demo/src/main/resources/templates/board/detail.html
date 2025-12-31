@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       layout:decorate="~{layout/layout}">
 
 <div layout:fragment="content" class="container-md" th:with="board = ${boardFileDTO.boardDTO}">
   <h1>Board Detail Page</h1>
   <form action="/board/modify" method="post" id="modForm" enctype="multipart/form-data">
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
     <input type="hidden" name="bno" th:value="${board.bno}">
     <div class="mb-3">
       <label for="t" class="form-label">Title</label>
@@ -55,14 +57,17 @@
     <!--  file list print  -->
     <div class="mb-3" id="fileZone"></div>
   </form>
-  <button type="button" class="btn btn-warning" id="modBtn">modify</button>
-  <a th:href="@{/board/remove(bno=${board.bno})}"><button type="button" class="btn btn-danger" id="delBtn" th:attr="data-bno=${board.bno}">delete</button></a>
+  <th:block sec:authorize="isAuthenticated()"
+            th:if="${#authentication.name eq board.writer}">
+    <button type="button" class="btn btn-warning" id="modBtn">modify</button>
+    <a th:href="@{/board/remove(bno=${board.bno})}"><button type="button" class="btn btn-danger" id="delBtn" th:attr="data-bno=${board.bno}">delete</button></a>
+  </th:block>
   <a th:href="@{/board/list}"><button type="button" class="btn btn-primary" id="listBtn">list</button></a>
 
   <!-- comment post -->
   <div id="comment">
-    <div class="input-group my-3">
-      <span class="input-group-text" id="cmtWriter">Tester</span>
+    <div class="input-group my-3" sec:authorize="isAuthenticated()">
+      <span class="input-group-text" id="cmtWriter">[[${#authentication.name}]]</span>
       <input type="text" id="cmtText" class="form-control" placeholder="Add Comment..." aria-label="Username" aria-describedby="basic-addon1">
       <button type="button" id="cmtAddBtn" class="btn btn-primary">post</button>
     </div>
@@ -104,6 +109,7 @@
   </div>
   <script th:inline="javascript">
     const bnoValue = [[${board.bno}]];
+    const loginUser = [[${#authentication.name}]];
   </script>
   <script th:src="@{/js/boardComment.js}"></script>
   <script th:src="@{/js/boardModify.js}"></script>
